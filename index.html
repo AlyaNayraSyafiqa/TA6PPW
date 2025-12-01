@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherGuard</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {darkMode: "class", theme: { extend: { fontFamily: { sans: ["Inter", "sans-serif"] }, animation: { "fade-in-up": "fadeInUp 0.5s ease-out forwards" },keyframes: { fadeInUp: { "0%": { opacity: "0", transform: "translateY(10px)" }, "100%": { opacity: "1", transform: "translateY(0)"}}}}}};
+    </script>
+    
+</head>
+
+<body class="min-h-screen font-sans transition-colors duration-700 text-slate-800 selection:bg-blue-500 selection:text-white bg-gradient-to-b from-sky-400 via-sky-300 to-blue-200 dark:bg-gradient-to-b dark:from-[#0f172a] dark:via-[#1e3a8a] dark:to-[#172554] dark:text-white dark:stars">
+    
+    <div id="notification" class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 opacity-0 translate-y-[-20px] pointer-events-none">
+        <div class="px-6 py-3 bg-slate-900/90 backdrop-blur-md rounded-full text-white shadow-2xl border border-white/10 text-center">
+            <span id="notifText" class="font-medium text-sm">Pesan Notifikasi</span>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto p-4 md:p-8">
+
+        <header class="flex justify-between items-center mb-8">
+            <div class="flex items-center gap-3">
+                <div class="text-white transition-transform hover:rotate-12 duration-300 cursor-pointer filter drop-shadow-md">
+                    <i class="fas fa-cloud-sun bolt text-3xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold tracking-tight text-white drop-shadow-md">
+                    Weather<span class="text-white/80">Guard</span>
+                </h1>
+            </div>
+
+            <div class="flex gap-2">
+                <button id="themeToggle"
+                    class="p-3 rounded-xl bg-slate-900/20 hover:bg-slate-900/40 backdrop-blur-md border border-white/10 shadow-sm transition-all duration-300 hover:scale-110 active:scale-95 text-white">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                <button id="unitToggle"
+                    class="px-4 py-2 text-sm font-semibold rounded-xl bg-slate-900/20 hover:bg-slate-900/40 backdrop-blur-md border border-white/10 text-white transition-all duration-300 hover:scale-105 active:scale-95">
+                    °C / °F
+                </button>
+            </div>
+        </header>
+
+        <section class="mb-8">
+            <div class="relative flex gap-2 mb-4">
+                <div class="relative w-full group">
+                    <input id="cityInput" list="citySuggestions"
+                        class="w-full px-4 py-3 rounded-xl border border-white/10 bg-slate-900/20 backdrop-blur-md 
+                               focus:bg-slate-900/40 focus:border-white/30 focus:outline-none placeholder-white/70 text-white shadow-sm transition-all duration-300 hover:bg-slate-900/30"
+                        placeholder="Cari nama kota...">
+
+                    <datalist id="citySuggestions"></datalist>
+                </div>
+
+                <button id="searchBtn"
+                    class="px-6 py-3 bg-slate-900/25 hover:bg-slate-900/50 border border-white/10 text-white rounded-xl font-medium shadow-lg transition-all duration-300 hover:scale-105 active:scale-95">
+                    Cari
+                </button>
+
+                <button id="refreshBtn"
+                    class="px-4 py-3 bg-slate-900/20 hover:bg-slate-900/40 border border-white/10 rounded-xl text-white transition-all duration-300 hover:scale-105 hover:rotate-180 active:scale-95">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+
+            <div id="favoritesList" class="flex flex-wrap gap-2"></div>
+        </section>
+
+        <div id="loadingIndicator" class="hidden text-center py-10">
+            <i class="fas fa-circle-notch fa-spin text-4xl text-white mb-3"></i>
+            <p class="text-white animate-pulse">Mengambil data cuaca...</p>
+        </div>
+        <div id="errorMessage" class="hidden p-4 mb-6 bg-red-500/50 text-white rounded-xl border border-red-200/50 flex items-center gap-3 backdrop-blur-md">
+            <i class="fas fa-exclamation-circle text-xl"></i>
+            <span id="errorText">Terjadi kesalahan.</span>
+        </div>
+
+        <main id="weatherContent" class="hidden animate-fade-in-up">
+
+            <div class="relative bg-slate-900/20 dark:bg-black/40 backdrop-blur-xl p-8 rounded-3xl shadow-lg mb-8 border border-white/10 text-white transition-transform duration-500 hover:scale-[1.01]">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 id="cityName" class="text-3xl font-bold drop-shadow-md"></h2>
+                        <p id="timestamp" class="text-white/80 font-medium"></p>
+                        
+                        <p id="lastUpdated" class="text-white/60 text-xs mt-1 italic flex items-center gap-1">
+                            <i class="fas fa-history"></i> <span>Memuat...</span>
+                        </p>
+                    </div>
+
+                    <button id="saveFavBtn"
+                        class="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900/20 hover:bg-pink-500/80 hover:border-pink-300 transition-all duration-300 border border-white/10 hover:scale-105 shadow-md">
+                        <i class="far fa-heart"></i>
+                        <span>Favorit</span>
+                    </button>
+                </div>
+
+                <div class="flex mt-8 items-center justify-between flex-wrap">
+                    <div class="flex items-center gap-4 group">
+                        <img id="weatherIcon" class="w-24 h-24 filter drop-shadow-lg transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
+                        <div>
+                            <span id="temperature" class="text-7xl font-bold drop-shadow-lg"></span>
+                            <span id="tempUnit" class="text-3xl text-white/70">°C</span>
+                            <p id="weatherDesc" class="text-xl capitalize font-medium text-white/90"></p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-4 rounded-xl bg-slate-900/20 border border-white/5 backdrop-blur-sm hover:bg-slate-900/40 transition duration-300">
+                            <p class="text-sm text-white/70">Kelembaban</p>
+                            <p id="humidity" class="text-xl font-bold"></p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-slate-900/20 border border-white/5 backdrop-blur-sm hover:bg-slate-900/40 transition duration-300">
+                            <p class="text-sm text-white/70">Angin</p>
+                            <p id="windSpeed" class="text-xl font-bold"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-bold mb-4 text-white drop-shadow-md">Ramalan 5 Hari</h3>
+            <div id="forecastGrid" class="grid grid-cols-2 md:grid-cols-5 gap-3"></div>
+
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
