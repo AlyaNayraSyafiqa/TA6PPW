@@ -2,13 +2,13 @@
 
 WeatherGuard adalah aplikasi cuaca berbasis web yang modern, responsif, dan interaktif. Aplikasi ini dibangun untuk memberikan informasi cuaca yang akurat secara real-time serta prakiraan cuaca untuk 5 hari ke depan.
 
-##Light Mode 
+## Light Mode 
 <img width="1076" height="833" alt="image" src="https://github.com/user-attachments/assets/8c1ffa26-5bbf-4362-80d9-10778786be71" />
 
-##Dark Mode
+## Dark Mode
 <img width="909" height="732" alt="image" src="https://github.com/user-attachments/assets/dba976f6-5e81-461a-94fc-9d25fa863947" />
 
-##Suggest Search 
+## Suggest Search 
 <img width="1063" height="832" alt="image" src="https://github.com/user-attachments/assets/facc93dc-11fd-4e07-aa1b-f84d78da8e9a" />
 
 
